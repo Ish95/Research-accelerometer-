@@ -57,9 +57,21 @@ def plot_acceleration(inputarr):
     az=inputarr[:,2]
     dt=inputarr[:,3]
     
-    plt.plot(az, label='z axis acce')
-    plt.plot(ax, label='x axis acce')
-    plt.plot(ay, label='y axis acce')
+    plt.figure(figsize=(12,20))
+    plt.subplot(411)    
+    plt.plot(dt,az,'b', label='z axis acce')
+    plt.legend()
+
+    plt.subplot(412)
+    plt.plot(dt,ax,'y', label='x axis acce')
+    plt.legend()
+    plt.subplot(413)
+    plt.plot(dt,ay,'g', label='y axis acce')
+    plt.legend()
+    plt.subplot(414)
+    plt.plot(dt,az,'b', label='z axis acce')
+    plt.plot(dt,ax,'y', label='x axis acce')
+    plt.plot(dt,ay,'g', label='y axis acce')
     plt.legend()
     plt.show()
     

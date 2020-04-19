@@ -17,7 +17,7 @@ x=[]  #temporary vector to fill in phidget input for acceleration
 t=[]  #temporary vector to fill in phidget input for time 
 corrected_acc=[]  #corrected vector removing duplicate acceleration
 corrected_dt=[]  #corected vector removing duplicate times
-run_time=10  #runtime for experiment
+run_time=3  #runtime for experiment
 
 #acceleration change event
 def onaccelerationchange(self,acceleration,timestamp):
@@ -47,34 +47,42 @@ def list_to_arr():
     finarr=np.column_stack((accarr,dtarr)) #combines both the arrays into one
     print(finarr)
 
+#subtracts gravity from the inserted values
+def gravity_correction(inarr):
+    global acceleration_array
+    ax=np.reshape(inarr[:,0],(12,1))
+    ay=np.reshape(inarr[:,1],(12,1))
+    az=np.reshape(inarr[:,2]-1,(12,1))
+    dt=np.reshape(inarr[:,3],(12,1))
+    acceleration_array=np.hstack((ax,ay,az,dt))
+    
+   # acc_array=np.reshape(s,(12,4))
 # this should have the option of putting this numpy arr into a csv file
 #function to create plot for testing 
 #plots will have x, y , z accelerations 
 
 def plot_acceleration(inputarr):
-    ax=inputarr[:,0]
-    ay=inputarr[:,1]
-    az=inputarr[:,2]
-    dt=inputarr[:,3]
-    
+    a0=inputarr[:,0]
+    a1=inputarr[:,1]
+    a2=inputarr[:,2]
+    t=inputarr[:,3]
     plt.figure(figsize=(12,20))
     plt.subplot(411)    
-    plt.plot(dt,az,'b', label='z axis acce')
+    plt.plot(t,a2,'b', label='z axis acce')
     plt.legend()
 
     plt.subplot(412)
-    plt.plot(dt,ax,'y', label='x axis acce')
+    plt.plot(t,a0,'y', label='x axis acce')
     plt.legend()
     plt.subplot(413)
-    plt.plot(dt,ay,'g', label='y axis acce')
+    plt.plot(t,a1,'g', label='y axis acce')
     plt.legend()
     plt.subplot(414)
-    plt.plot(dt,az,'b', label='z axis acce')
-    plt.plot(dt,ax,'y', label='x axis acce')
-    plt.plot(dt,ay,'g', label='y axis acce')
+    plt.plot(t,a2,'b', label='z axis acce')
+    plt.plot(t,a0,'y', label='x axis acce')
+    plt.plot(t,a1,'g', label='y axis acce')
     plt.legend()
     plt.show()
-    
 #creating a class to have accelearation and time corrected with array createad 
 class Vector_correction:
     
@@ -107,4 +115,6 @@ try:
     onaccelerationchange()
 finally: 
     list_to_arr()
-    plot_acceleration(finarr)
+    gravity_correction(finarr)
+    plot_acceleration(acceleration_array)
+    

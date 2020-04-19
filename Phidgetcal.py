@@ -50,10 +50,11 @@ def list_to_arr():
 #subtracts gravity from the inserted values
 def gravity_correction(inarr):
     global acceleration_array
-    ax=np.reshape(inarr[:,0],(12,1))
-    ay=np.reshape(inarr[:,1],(12,1))
-    az=np.reshape(inarr[:,2]-1,(12,1))
-    dt=np.reshape(inarr[:,3],(12,1))
+    d1,d2=np.shape(inarr)
+    ax=np.reshape(inarr[:,0],(d1,1))
+    ay=np.reshape(inarr[:,1],(d1,1))
+    az=np.reshape(inarr[:,2]-1,(d1,1))
+    dt=np.reshape(inarr[:,3],(d1,1))
     acceleration_array=np.hstack((ax,ay,az,dt))
     
    # acc_array=np.reshape(s,(12,4))

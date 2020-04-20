@@ -12,11 +12,13 @@ from Phidget22.Devices.Accelerometer import*
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import math 
 
 x=[]  #temporary vector to fill in phidget input for acceleration
 t=[]  #temporary vector to fill in phidget input for time 
 corrected_acc=[]  #corrected vector removing duplicate acceleration
 corrected_dt=[]  #corected vector removing duplicate times
+amag=[] #this stores the magnitude values of the acceleration
 run_time=3  #runtime for experiment
 
 #acceleration change event
@@ -82,8 +84,26 @@ def plot_acceleration(inputarr):
     plt.plot(t,a2,'b', label='z axis acce')
     plt.plot(t,a0,'y', label='x axis acce')
     plt.plot(t,a1,'g', label='y axis acce')
+    plt.plot(t,amag,'r',label='Acceleration magnitude')
     plt.legend()
     plt.show()
+    
+#calcalates the magnitude of the accleration using the ax, ay and az values 
+def acceleration_magnitude(inarr):
+    
+#input will be the corrected array after subtracting -1 from acceleration 
+#need to slice open array and make room for new column 
+    axx=inarr[:,0]
+    ayy=inarr[:,1]
+    azz=inarr[:,2]
+    time=inarr[:,3]
+    for i in range(0,len(axx)):
+        d=(axx[i]**2)+(ayy[i]**2)+(azz[i]**2)
+        m=math.sqrt(d)
+        amag.append(m)
+        
+        
+        
 #creating a class to have accelearation and time corrected with array createad 
 class Vector_correction:
     
@@ -117,5 +137,6 @@ try:
 finally: 
     list_to_arr()
     gravity_correction(finarr)
+    acceleration_magnitude(acceleration_array)
     plot_acceleration(acceleration_array)
     

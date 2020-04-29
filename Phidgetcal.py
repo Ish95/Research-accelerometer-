@@ -19,8 +19,11 @@ t=[]  #temporary vector to fill in phidget input for time
 corrected_acc=[]  #corrected vector removing duplicate acceleration
 corrected_dt=[]  #corected vector removing duplicate times
 amag=[] #this stores the magnitude values of the acceleration
-run_time=3  #runtime for experiment
+tilt=[]
+g=9.81
 
+
+run_time=2  #runtime for experiment
 #acceleration change event
 def onaccelerationchange(self,acceleration,timestamp):
     global x
@@ -47,7 +50,7 @@ def list_to_arr():
     accarr=np.array(acc.acceleration_corr())
     dtarr=np.array(acc.timestamp_corr())
     finarr=np.column_stack((accarr,dtarr)) #combines both the arrays into one
-    print(finarr)
+    
 
 #subtracts gravity from the inserted values
 def gravity_correction(inarr):
@@ -57,7 +60,8 @@ def gravity_correction(inarr):
     ay=np.reshape(inarr[:,1],(d1,1))
     az=np.reshape(inarr[:,2]-1,(d1,1))
     dt=np.reshape(inarr[:,3],(d1,1))
-    acceleration_array=np.hstack((ax,ay,az,dt))
+    acceleration_array=np.hstack((ax*g,ay*g,az*g,dt))
+    print(acceleration_array)
     
    # acc_array=np.reshape(s,(12,4))
 # this should have the option of putting this numpy arr into a csv file
@@ -102,7 +106,31 @@ def acceleration_magnitude(inarr):
         m=math.sqrt(d)
         amag.append(m)
         
+#calculates tilt angle       
+def tiltangle(inarr):
+    global tilt
+    agx=inarr[:,0]/9.81
+    agy=inarr[:,1]/9.81
+
+    
+    for i in range(0,len(agx)):
+        t=[math.degrees(np.arcsin(agx[i])),math.degrees(np.arcsin(agy[i]))]
+        t1,t2=t
+        tmag=(t1**2)+(t2**2)
+        rad=math.sqrt(tmag)
+        t=[t1,t2,rad]
+        tilt.append(t)
         
+#plots tilt angle   
+def plottilt(inarr):
+    arr=np.array(inarr)
+    tiltx=arr[:,0]
+    tilty=arr[:,1]
+    
+    plt.plot(tiltx,label='Tilt in x axis')
+    plt.plot(tilty,label='Tilt in y axis')
+    
+    plt.legend()        
         
 #creating a class to have accelearation and time corrected with array createad 
 class Vector_correction:
@@ -131,6 +159,8 @@ class Vector_correction:
                
         return corrected_dt
 
+
+#main code that runs continuously as long as we run the script
 try:
     main()
     onaccelerationchange()
@@ -138,5 +168,7 @@ finally:
     list_to_arr()
     gravity_correction(finarr)
     acceleration_magnitude(acceleration_array)
+    tiltangle(acceleration_array)
+    plottilt(tilt)
     plot_acceleration(acceleration_array)
     

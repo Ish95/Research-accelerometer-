@@ -24,6 +24,21 @@ g=9.81
 
 
 run_time=2  #runtime for experiment
+
+def writetocsv(arr,mag):
+    
+    w=np.array(mag)
+    
+    e1,e2=np.shape(arr)
+    magnitude=np.reshape(w,(e1,1))
+    a0=np.reshape(arr[:,0],(e1,1)) 
+    a1=np.reshape(arr[:,1],(e1,1))   
+    a2=np.reshape(arr[:,2],(e1,1))
+    time=np.reshape(arr[:,3],(e1,1))
+    accdata=np.hstack((a0,a1,a2,magnitude,time/1000))
+    
+    csvfile=np.savetxt('Accelerationdata.csv',accdata,delimiter=',',header='Ax,Ay,Az,Magnitude,Time')
+
 #acceleration change event
 def onaccelerationchange(self,acceleration,timestamp):
     global x
@@ -100,7 +115,6 @@ def acceleration_magnitude(inarr):
     axx=inarr[:,0]
     ayy=inarr[:,1]
     azz=inarr[:,2]
-    time=inarr[:,3]
     for i in range(0,len(axx)):
         d=(axx[i]**2)+(ayy[i]**2)+(azz[i]**2)
         m=math.sqrt(d)
@@ -171,4 +185,4 @@ finally:
     tiltangle(acceleration_array)
     plottilt(tilt)
     plot_acceleration(acceleration_array)
-    
+    writetocsv(acceleration_array,amag)
